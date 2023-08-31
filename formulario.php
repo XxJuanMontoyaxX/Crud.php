@@ -8,38 +8,62 @@ include("conexion.php");//Incluimos el archivo conexion y asi podemos usarlas va
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <?php
+        $nitocc="";
+        $nombre="";
+        $direccion="";
+        $telefono="";
+        $fechaingreso="";
+        $cupocredito="";
+        $foto="";
+        if(isset($_POST['buscar']))
+        {
+            $nitoccbuscar=$_POST['buscarnit'];//Valor que nos escriben en el input de buscar, que corresponde al nit o cc que se desea buscar
+            $consulta=$conexion->query("select * from tblcliente where nitocc='$nitoccbuscar'");
+            while($resultadoconsulta=$consulta->fetch_array())
+            {
+                $nitocc=$resultadoconsulta[0];
+                $nombre=$resultadoconsulta[1];
+                $direccion=$resultadoconsulta[2];
+                $telefono=$resultadoconsulta[3];
+                $fechaingreso=$resultadoconsulta[4];
+                $cupocredito=$resultadoconsulta[5];
+                $foto=$resultadoconsulta[6];
+            }
+        }
+    ?>
 </head>
 <body>
     <center>
         <h2>Manipulacion de datos con PHP</h2>
         <form action="" method="post" enctype="multipart/form-data">
             <label for="">Buscar:</label>
-            <input type="text" name="buscar/nit" id="" placeholder="Buscar cliente">
+            <input type="text" name="buscarnit" id="" placeholder="Buscar cliente">
             <input type="submit" value="buscar" name="buscar">
             <hr>
             <label for="">Nit o CC:</label>
-            <input type="text" name="nitocc" id="" placeholder="Ingresa el nit o Cc del nuevo cliente">
+            <input type="text" name="nitocc" id="" placeholder="Ingresa el nit o Cc del nuevo cliente" value="<?php echo $nitocc ?>">
             <br><br>
             <label for="">Nombres:</label>
-            <input type="text" name="nombre" id="" placeholder="Ingresa el nombre completo">
+            <input type="text" name="nombre" id="" placeholder="Ingresa el nombre completo" value="<?php echo $nombre ?>">
             <br><br>
             <label for="">Direccion:</label>
-            <input type="text" name="direccion" id="" placeholder="ej: Cll 34 #12-20">
+            <input type="text" name="direccion" id="" placeholder="ej: Cll 34 #12-20" value="<?php echo $direccion ?>">
             <br><br>
             <label for="">Telefono:</label>
-            <input type="number" name="telefono" id="" placeholder="ej: 300-2345-6789">
+            <input type="number" name="telefono" id="" placeholder="ej: 300-2345-6789" value="<?php echo $telefono ?>">
             <br><br>
             <label for="">Fecha de Ingreso:</label>
-            <input type="date" name="fechaIngreso" id="">
+            <input type="date" name="fechaIngreso" id="" value="<?php echo $fechaingreso ?>">
             <br><br>
             <label for="">Grupo del credito:</label>
-            <input type="number" name="cupoCredito" id="" placeholder="$ Valor en pesos">
+            <input type="number" name="cupoCredito" id="" placeholder="$ Valor en pesos" value="<?php echo $cupocredito ?>">
             <br><br>
             <label for="">Subir foto:</label>
             <input type="file" name="foto" id="">
             <br><br>
             <label for="">Foto:</label>
-            <img src="" alt="" width="80" height="80">
+            <img src="<?php $foto ?>" alt="" width="80" height="80">
             <br><br>
             <input type="submit" value="Nuevo Cliente" name="guardar">
             <input type="submit" value="Listar todos los Cliente" name="listar">
