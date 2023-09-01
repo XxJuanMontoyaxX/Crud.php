@@ -7,14 +7,15 @@ include("conexion.php");//Incluimos el archivo conexion y asi podemos usarlas va
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+    <title>Crud PHP</title>
     <?php
         $nitocc="";
         $nombre="";
         $direccion="";
         $telefono="";
-        $fechaingreso="";
-        $cupocredito="";
+        $fechaIngreso="";
+        $cupoCredito="";
         $foto="";
         if(isset($_POST['buscar']))
         {
@@ -26,8 +27,8 @@ include("conexion.php");//Incluimos el archivo conexion y asi podemos usarlas va
                 $nombre=$resultadoconsulta[1];
                 $direccion=$resultadoconsulta[2];
                 $telefono=$resultadoconsulta[3];
-                $fechaingreso=$resultadoconsulta[4];
-                $cupocredito=$resultadoconsulta[5];
+                $fechaIngreso=$resultadoconsulta[4];
+                $cupoCredito=$resultadoconsulta[5];
                 $foto=$resultadoconsulta[6];
             }
         }
@@ -40,7 +41,10 @@ include("conexion.php");//Incluimos el archivo conexion y asi podemos usarlas va
             <label for="">Buscar:</label>
             <input type="text" name="buscarnit" id="" placeholder="Buscar cliente">
             <input type="submit" value="buscar" name="buscar">
+            <input type="submit" value="Listar todos los Cliente" name="listar">
+        </form>
             <hr>
+            <form action="consultas.php" method="post" enctype="multipart/form-data">
             <label for="">Nit o CC:</label>
             <input type="text" name="nitocc" id="" placeholder="Ingresa el nit o Cc del nuevo cliente" value="<?php echo $nitocc ?>">
             <br><br>
@@ -54,55 +58,59 @@ include("conexion.php");//Incluimos el archivo conexion y asi podemos usarlas va
             <input type="number" name="telefono" id="" placeholder="ej: 300-2345-6789" value="<?php echo $telefono ?>">
             <br><br>
             <label for="">Fecha de Ingreso:</label>
-            <input type="date" name="fechaIngreso" id="" value="<?php echo $fechaingreso ?>">
+            <input type="date" name="fechaIngreso" id="" value="<?php echo $fechaIngreso ?>">
             <br><br>
             <label for="">Grupo del credito:</label>
-            <input type="number" name="cupoCredito" id="" placeholder="$ Valor en pesos" value="<?php echo $cupocredito ?>">
+            <input type="number" name="cupoCredito" id="" placeholder="$ Valor en pesos" value="<?php echo $cupoCredito ?>">
             <br><br>
             <label for="">Subir foto:</label>
             <input type="file" name="foto" id="">
             <br><br>
             <label for="">Foto:</label>
-            <img src="<?php $foto ?>" alt="" width="80" height="80">
+            <img src="<?php echo $foto ?>" alt="" width="80" height="80">
             <br><br>
             <input type="submit" value="Nuevo Cliente" name="guardar">
-            <input type="submit" value="Listar todos los Cliente" name="listar">
+          
             <input type="submit" value="Actualizar Cliente" name="actualizar">
             <input type="submit" value="Eliminar Cliente" name="eliminar">
         </form>
     </center>
-        <?php
-            if(isset($_POST['guardar']))
-            {
-                //Los datos de entrada almacenados en variables
-                $nitocc=$_POST['nitocc'];
-                $nombre=$_POST['nombre'];
-                $direccion=$_POST['direccion'];
-                $telefono=$_POST['telefono'];
-                $fechaingreso=$_POST['fechaIngreso'];
-                $cupocredito=$_POST['cupoCredito'];
-                //Manejo de archivos:
-                $nombre_foto=$_FILES['foto']['name'];//nombre de la foto
-                $ruta=$_FILES['foto']['tmp_name'];//Ruta o path del archivo
-                $foto='fotos/'.$nombre_foto;//Ruta y nombre del archivo
-                copy($ruta,$foto);//Guarda el archivo en una ruta especifica
-
-                //Verificar que no existan valores duplicados para el campo de nit o Cédula
-                $sqlbuscar="SELECT nitocc FROM tblcliente WHERE nitocc='$nitocc' ORDER BY nitocc";
-                if($resultado=mysqli_query($conexion,$sqlbuscar))
-                {
-                    $nroregistros=mysqli_num_rows($resultado);
-                    if($nroregistros>0)
-                    {
-                        echo "<script>alert('Ese NIT o Cc ya existe !!');</script>";
-                    }else
-                    {
-                        mysqli_query($conexion,"INSERT INTO tblcliente (nitocc,nombre,direccion,telefono,fechaIngreso,cupoCredito,foto)
-                         VALUES ('$nitocc','$nombre','$direccion','$telefono','$fechaingreso','$cupocredito','$foto')");
-                         echo "Datos Guardados Correctamente";
-                    }
-                }
-            }
-        ?>
+    <?php
+if(isset($_POST['listar'])){
+    echo "<center>
+    <table border=3>
+        <tr>  
+         <th>Nit o Cc</th>  
+         <th>Direccion</th>  
+         <th>Telefono</th>  
+         <th>fechaIngreso</th>  
+         <th>cupoCredito</th>  
+         <th>foto del cliente</th>  
+      </tr>";
+    $buscar=$conexion->query("select * from tblcliente");
+    while($resultado=$buscar->fetch_array())
+    {
+        $nitocc=$resultado[0];
+        $nombre=$resultado[1];
+        $direccion=$resultado[2];
+        $telefono=$resultado[3];
+       date_default_timezone_set('America/Bogota');
+       $fechaIngreso=date("d-m-Y",strtotime($resultado[4]));
+       $cupoCredito=number_format($resultado[5]);
+       $foto=$resultado[6];
+   echo "<tr>
+   <td>$nitocc</td> 
+   <td>$nombre</td> 
+   <td>$direccion</td> 
+   <td>$telefono</td> 
+   <td>$fechaIngreso</td> 
+   <td>$cupoCredito</td> 
+   <td>
+        <img src='$foto' width='30%' height='30%'>
+   </td> 
+        </tr>";
+} echo "</table> </center>";
+}
+    ?>
 </body>
 </html>
